@@ -35,28 +35,39 @@ def reader():
 
             time, volume, gas = map(str, i.split())
             volume = int(volume)
+
+            number_leave_autos = []
             for j in range(number_stations):
 
                 key_j = 'Автомат №' + str(j + 1)
                 if len(slovar_clients[key_j]) != 0:
-#вывести на экран выезжающих, если их время раньше нового времени
+
+#составить список всех выезжающих
                     time_1 = int(time[:2]) * 60 + int(time[3:])
                     time_2 = int(slovar_clients[key_j][0][0][:2]) * 60 + int(slovar_clients[key_j][0][0][3:])
                     if time_1 >= time_2: # Надо бы красивше сделать
+                        number_leave_autos.append((j+1, time_2))
 
-                        print('В', slovar_clients[key_j][0][0], 'клиент', slovar_clients[key_j][0][1],
-                              slovar_clients[key_j][0][2], slovar_clients[key_j][0][3], slovar_clients[key_j][0][4],
-                              'заправил свой автомобиль и покинул АЗС.')
+            number_leave_autos.sort(key=lambda i: (i[1], i[0]))
+            for j in number_leave_autos:
+                key_j = 'Автомат №' + str(j[0])
+# вывести на экран выезжающих, если их время раньше нового времени? в нужном порядке
+                print('В', slovar_clients[key_j][0][0], 'клиент', slovar_clients[key_j][0][1],
+                      slovar_clients[key_j][0][2], slovar_clients[key_j][0][3], slovar_clients[key_j][0][4],
+                      'заправил свой автомобиль и покинул АЗС.')
+
 #удалить список с отъезжающим автомобилем
-                        slovar_clients[key_j] = slovar_clients[key_j][1:]
-                        for g in range(number_stations):
-#вывести информацию про оставшиеся автомобили
-                            key_g = 'Автомат №' + str(g + 1)
-                            lst_keys = list(slovar_info[key_g].keys())
-                            number_autos = '*' * len(slovar_clients[key_g])
+                slovar_clients[key_j] = slovar_clients[key_j][1:]
 
-                            print(key_g, lst_keys[0], slovar_info[key_g][lst_keys[0]], lst_keys[1],
-                                slovar_info[key_g][lst_keys[1]], '->', number_autos)
+                for g in range(number_stations):
+
+#вывести информацию про оставшиеся автомобили
+                    key_g = 'Автомат №' + str(g + 1)
+                    lst_keys = list(slovar_info[key_g].keys())
+                    number_autos = '*' * len(slovar_clients[key_g])
+
+                    print(key_g, lst_keys[0], slovar_info[key_g][lst_keys[0]], lst_keys[1],
+                          slovar_info[key_g][lst_keys[1]], '->', number_autos)
 
 
 #проверить автоматы с подходящим бензином
@@ -118,6 +129,7 @@ def reader():
                       time_refueling, 'встал в очередь к автомату №', number_stations_w_gas[0][0])
 
                 for g in range(number_stations):
+
             # вывести информацию про оставшиеся автомобили
                     key_g = 'Автомат №' + str(g + 1)
                     lst_keys = list(slovar_info[key_g].keys())
@@ -131,6 +143,7 @@ def reader():
                       time_refueling, 'не смог заправить автомобиль и покинул АЗС.')
 
                 for g in range(number_stations):
+
             # вывести информацию про оставшиеся автомобили
                     key_g = 'Автомат №' + str(g + 1)
                     lst_keys = list(slovar_info[key_g].keys())
