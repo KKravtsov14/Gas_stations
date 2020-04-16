@@ -40,22 +40,23 @@ def reader():
                 key_j = 'Автомат №' + str(j + 1)
                 if len(slovar_clients[key_j]) != 0:
 #вывести на экран выезжающих, если их время раньше нового времени
-                    if int(time.replace(':', '')) >= int(slovar_clients[key_j][0][0].replace(':', '')): # Надо бы красивше сделать
+                    time_1 = int(time[:2]) * 60 + int(time[3:])
+                    time_2 = int(slovar_clients[key_j][0][0][:2]) * 60 + int(slovar_clients[key_j][0][0][3:])
+                    if time_1 >= time_2: # Надо бы красивше сделать
 
                         print('В', slovar_clients[key_j][0][0], 'клиент', slovar_clients[key_j][0][1],
                               slovar_clients[key_j][0][2], slovar_clients[key_j][0][3], slovar_clients[key_j][0][4],
                               'заправил свой автомобиль и покинул АЗС.')
 #удалить список с отъезжающим автомобилем
                         slovar_clients[key_j] = slovar_clients[key_j][1:]
-
-                    for g in range(number_stations):
+                        for g in range(number_stations):
 #вывести информацию про оставшиеся автомобили
-                        key_g = 'Автомат №' + str(g + 1)
-                        lst_keys = list(slovar_info[key_g].keys())
-                        number_autos = '*' * len(slovar_clients[key_g])
+                            key_g = 'Автомат №' + str(g + 1)
+                            lst_keys = list(slovar_info[key_g].keys())
+                            number_autos = '*' * len(slovar_clients[key_g])
 
-                        print(key_g, lst_keys[0], slovar_info[key_g][lst_keys[0]], lst_keys[1],
-                              slovar_info[key_g][lst_keys[1]], '->', number_autos)
+                            print(key_g, lst_keys[0], slovar_info[key_g][lst_keys[0]], lst_keys[1],
+                                slovar_info[key_g][lst_keys[1]], '->', number_autos)
 
 
 #проверить автоматы с подходящим бензином
@@ -111,7 +112,7 @@ def reader():
 
 #внести все данные в соответствующую очередь или отправить автомобиль и вывести результат на экран
             if len(slovar_clients[number_station]) < slovar_info[number_station]['Максимальная очередь:']:
-                slovar_clients['Автомат №' + str(number_stations_w_gas[0][0])].append(lst_append)
+                slovar_clients[number_station].append(lst_append)
 
                 print('В', time, 'новый клиент:', time, gas, volume,
                       time_refueling, 'встал в очередь к автомату №', number_stations_w_gas[0][0])
