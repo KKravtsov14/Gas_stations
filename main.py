@@ -1,3 +1,6 @@
+# Developers: Kravtsov - 80%
+#             Mikhailov - 50%
+# Тут описание бахни
 import random as rnd
 import math as m
 
@@ -18,16 +21,18 @@ def dictionary_file():
             lst.append(a)
     slovar_info = {}
     for k in range(len(lst)):
-        slovar = [lst_auto[k], {'Максимальная очередь:': int(lst_car[k]), 'Марки бензина:': lst_oil[k]}]
+        slovar = [lst_auto[k], {'Максимальная очередь:': int(lst_car[k]), 'Марки бензина:': ' '.join(lst_oil[k])}]
         slovar_info[slovar[0]] = slovar[1]
     return slovar_info, number_stations
 
-
-def reader():
+#Сортировка по времени отъезда,а если оно совпадает, тогда по автоматам
+def main():
     with open('input.txt', 'r') as f:
 
         slovar_info, number_stations = dictionary_file()
         slovar_clients = {}
+        oil_80, oil_92, oil_95, oil_98 = [], [], [], []
+        lose_clients = []
         for i in list(slovar_info.keys()):
             slovar_clients[i] = []
 
@@ -53,6 +58,15 @@ def reader():
             for j in number_leave_autos:
                 key_j = 'Автомат №' + str(j[0])
 # вывести на экран выезжающих, если их время раньше нового времени, в нужном порядке
+                if slovar_clients[key_j][0][2] == 'АИ-80':
+                    oil_80.append(slovar_clients[key_j][0][3])
+                elif slovar_clients[key_j][0][2] == 'АИ-92':
+                    oil_92.append(slovar_clients[key_j][0][3])
+                elif slovar_clients[key_j][0][2] == 'АИ-95':
+                    oil_95.append(slovar_clients[key_j][0][3])
+                elif slovar_clients[key_j][0][2] == 'АИ-98':
+                    oil_98.append(slovar_clients[key_j][0][3])
+
                 print('В', slovar_clients[key_j][0][0], 'клиент', slovar_clients[key_j][0][1],
                       slovar_clients[key_j][0][2], slovar_clients[key_j][0][3], slovar_clients[key_j][0][4],
                       'заправил свой автомобиль и покинул АЗС.')
@@ -140,6 +154,7 @@ def reader():
                           slovar_info[key_g][lst_keys[1]], '->', number_autos)
 
             else:
+                lose_clients.append(gas)
                 print('В', time, 'новый клиент:', time_departure, gas, volume,
                       time_refueling, 'не смог заправить автомобиль и покинул АЗС.')
 
@@ -152,7 +167,12 @@ def reader():
 
                     print(key_g, lst_keys[0], slovar_info[key_g][lst_keys[0]], lst_keys[1],
                           slovar_info[key_g][lst_keys[1]], '->', number_autos)
-
-
-
-reader()
+    print('-----------------------------------------------------------------------')
+    print('                      Информация за сутки                      ')
+    print('Количество бензина проданного за сутки: ','АИ-80',sum(oil_80),
+          'литров','\n','                                        АИ-92', sum(oil_92)
+        ,str('литров'),'\n','                                        АИ-95', sum(oil_95),'литров','\n',
+        '                                        АИ-98', sum(oil_98), 'литров')
+    print('Выручка за сутки:', sum(oil_80) * 23 + sum(oil_92) * 41  + sum(oil_95) * 45  + sum(oil_98) * 50,'rub')
+    print('Количество клиентов, которые покинули АЗС из-за скопившейся очереди:',len(lose_clients))
+main()
