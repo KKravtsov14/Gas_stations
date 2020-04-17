@@ -32,7 +32,8 @@ def reader():
             slovar_clients[i] = []
 
         for i in f:
-
+            if i[:2] == '04':
+                break
             time, volume, gas = map(str, i.split())
             volume = int(volume)
 
@@ -40,18 +41,20 @@ def reader():
             for j in range(number_stations):
 
                 key_j = 'Автомат №' + str(j + 1)
-                if len(slovar_clients[key_j]) != 0:
 
+                if len(slovar_clients[key_j]) != 0:
 #составить список всех выезжающих
-                    time_1 = int(time[:2]) * 60 + int(time[3:])
-                    time_2 = int(slovar_clients[key_j][0][0][:2]) * 60 + int(slovar_clients[key_j][0][0][3:])
-                    if time_1 >= time_2: # Надо бы красивше сделать
-                        number_leave_autos.append((j+1, time_2))
+                    for g in range(len(slovar_clients[key_j])):
+                        time_1 = int(time[:2]) * 60 + int(time[3:])
+                        time_2 = int(slovar_clients[key_j][g][0][:2]) * 60 + int(slovar_clients[key_j][g][0][3:])
+                        if time_1 >= time_2:
+                            number_leave_autos.append((j+1, time_2))
 
             number_leave_autos.sort(key=lambda i: (i[1], i[0]))
+
             for j in number_leave_autos:
                 key_j = 'Автомат №' + str(j[0])
-# вывести на экран выезжающих, если их время раньше нового времени? в нужном порядке
+# вывести на экран выезжающих, если их время раньше нового времени, в нужном порядке
                 print('В', slovar_clients[key_j][0][0], 'клиент', slovar_clients[key_j][0][1],
                       slovar_clients[key_j][0][2], slovar_clients[key_j][0][3], slovar_clients[key_j][0][4],
                       'заправил свой автомобиль и покинул АЗС.')
