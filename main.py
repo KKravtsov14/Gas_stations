@@ -32,8 +32,6 @@ def reader():
             slovar_clients[i] = []
 
         for i in f:
-            if i[:2] == '04':
-                break
             time, volume, gas = map(str, i.split())
             volume = int(volume)
 
