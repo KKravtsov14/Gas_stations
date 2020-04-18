@@ -1,14 +1,25 @@
 # Developers: Kravtsov - 80%
 #             Mikhailov - 50%
-# Тут описание бахни
+# program for displaying the queue of visitors to a gas station,
+# counting the amount of gasoline sold and revenue per day
+
 import random as rnd
 import math as m
 
 
 def dictionary_file():
+
+    """
+    program for reading station information file
+
+    :return:dictionary with information about each station,
+            number of stations
+    """
+
     with open('azs.txt', 'r') as f:
         number_stations = 0
         lst, lst_auto, lst_car, lst_oil = [], [], [], []
+
         for _ in f:
             number_stations += 1
             a = _.replace('\n', '')
@@ -19,20 +30,28 @@ def dictionary_file():
             lst_car.append(countcar)
             lst_oil.append(oil)
             lst.append(a)
+
     slovar_info = {}
     for k in range(len(lst)):
         slovar = [lst_auto[k], {'Максимальная очередь:': int(lst_car[k]), 'Марки бензина:': ' '.join(lst_oil[k])}]
         slovar_info[slovar[0]] = slovar[1]
     return slovar_info, number_stations
 
-#Сортировка по времени отъезда,а если оно совпадает, тогда по автоматам
 def main():
+
+    """
+    program for processing and displaying data
+
+    :return:
+    """
+
     with open('input.txt', 'r') as f:
 
         slovar_info, number_stations = dictionary_file()
         slovar_clients = {}
         oil_80, oil_92, oil_95, oil_98 = [], [], [], []
         lose_clients = []
+
         for i in list(slovar_info.keys()):
             slovar_clients[i] = []
 
@@ -46,18 +65,21 @@ def main():
                 key_j = 'Автомат №' + str(j + 1)
 
                 if len(slovar_clients[key_j]) != 0:
-#составить список всех выезжающих
+
+                    # cycle for counting departing
                     for g in range(len(slovar_clients[key_j])):
                         time_1 = int(time[:2]) * 60 + int(time[3:])
                         time_2 = int(slovar_clients[key_j][g][0][:2]) * 60 + int(slovar_clients[key_j][g][0][3:])
                         if time_1 >= time_2:
                             number_leave_autos.append((j+1, time_2))
 
+            # sorting departing by time
             number_leave_autos.sort(key=lambda i: (i[1], i[0]))
 
+            # cycle to display departing
             for j in number_leave_autos:
                 key_j = 'Автомат №' + str(j[0])
-# вывести на экран выезжающих, если их время раньше нового времени, в нужном порядке
+
                 if slovar_clients[key_j][0][2] == 'АИ-80':
                     oil_80.append(slovar_clients[key_j][0][3])
                 elif slovar_clients[key_j][0][2] == 'АИ-92':
@@ -71,12 +93,12 @@ def main():
                       slovar_clients[key_j][0][2], slovar_clients[key_j][0][3], slovar_clients[key_j][0][4],
                       'заправил свой автомобиль и покинул АЗС.')
 
-#удалить список с отъезжающим автомобилем
+                # delete information about a departing car
                 slovar_clients[key_j] = slovar_clients[key_j][1:]
 
+                # cycle to display information about the remaining cars
                 for g in range(number_stations):
 
-#вывести информацию про оставшиеся автомобили
                     key_g = 'Автомат №' + str(g + 1)
                     lst_keys = list(slovar_info[key_g].keys())
                     number_autos = '*' * len(slovar_clients[key_g])
@@ -84,8 +106,7 @@ def main():
                     print(key_g, lst_keys[0], slovar_info[key_g][lst_keys[0]], lst_keys[1],
                           slovar_info[key_g][lst_keys[1]], '->', number_autos)
 
-
-#проверить автоматы с подходящим бензином
+            # check machines with suitable gas for visitors
             number_stations_w_gas = []
             for j in range(number_stations):
 
@@ -94,9 +115,10 @@ def main():
                 if gas in slovar_info[key_j][lst_keys[1]]:
                     number_stations_w_gas.append((j + 1, len(slovar_clients[key_j])))
 
+            # sorting machines by the least queue
             number_stations_w_gas.sort(key=lambda i: (i[1], i[0]))
 
-#вычислить время заправки
+            # calculation refueling time
             number_station = 'Автомат №' + str(number_stations_w_gas[0][0])
             len_autos = len(slovar_clients[number_station])
 
@@ -136,7 +158,8 @@ def main():
 
             lst_append = [time_departure, time, gas, volume, time_refueling]
 
-#внести все данные в соответствующую очередь или отправить автомобиль и вывести результат на экран
+            # enter all the data in the appropriate queue
+            # or send the car and display the result on the screen
             if len(slovar_clients[number_station]) < slovar_info[number_station]['Максимальная очередь:']:
                 slovar_clients[number_station].append(lst_append)
 
@@ -144,8 +167,6 @@ def main():
                       time_refueling, 'встал в очередь к автомату №', number_stations_w_gas[0][0])
 
                 for g in range(number_stations):
-
-            # вывести информацию про оставшиеся автомобили
                     key_g = 'Автомат №' + str(g + 1)
                     lst_keys = list(slovar_info[key_g].keys())
                     number_autos = '*' * len(slovar_clients[key_g])
@@ -159,20 +180,21 @@ def main():
                       time_refueling, 'не смог заправить автомобиль и покинул АЗС.')
 
                 for g in range(number_stations):
-
-            # вывести информацию про оставшиеся автомобили
                     key_g = 'Автомат №' + str(g + 1)
                     lst_keys = list(slovar_info[key_g].keys())
                     number_autos = '*' * len(slovar_clients[key_g])
 
                     print(key_g, lst_keys[0], slovar_info[key_g][lst_keys[0]], lst_keys[1],
                           slovar_info[key_g][lst_keys[1]], '->', number_autos)
-    print('-----------------------------------------------------------------------')
-    print('                      Информация за сутки                      ')
-    print('Количество бензина проданного за сутки: ','АИ-80',sum(oil_80),
-          'литров','\n','                                        АИ-92', sum(oil_92)
-        ,str('литров'),'\n','                                        АИ-95', sum(oil_95),'литров','\n',
-        '                                        АИ-98', sum(oil_98), 'литров')
-    print('Выручка за сутки:', sum(oil_80) * 23 + sum(oil_92) * 41  + sum(oil_95) * 45  + sum(oil_98) * 50,'rub')
-    print('Количество клиентов, которые покинули АЗС из-за скопившейся очереди:',len(lose_clients))
+
+    # display totals
+    print('-' * 71)
+    print(' ' * 20, 'Информация за сутки', ' ' * 20)
+    print('Количество бензина проданного за сутки:', 'АИ-80',sum(oil_80), 'литров',
+          '\n', ' ' * 38, 'АИ-92', sum(oil_92), 'литров', '\n', ' ' * 38, 'АИ-95',
+          sum(oil_95), 'литров', '\n', ' ' * 38, 'АИ-98', sum(oil_98), 'литров')
+    print('Выручка за сутки:', sum(oil_80) * 23 + sum(oil_92) * 41 + sum(oil_95) * 45 + sum(oil_98) * 50, 'rub')
+    print('Количество клиентов, которые покинули АЗС из-за скопившейся очереди:', len(lose_clients))
+
+
 main()
